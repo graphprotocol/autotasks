@@ -1,0 +1,8 @@
+{
+  "name": "graphprotocol-autotasks",
+  "version": "1.0.0",
+  "description": "A collection of Defender Autotasks to interact with The Graph protocol contracts",
+  "repository": "https://github.com/graphprotocol/autotasks",
+  "author": "Pablo Carranza Vélez <pablo@edgeandnode.com>",
+  "license": "MIT"
+}

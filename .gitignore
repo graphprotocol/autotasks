@@ -1,0 +1,15 @@
+node_modules/
+
+# Ignore build stuff
+cache/
+build/
+dist/
+
+# Others
+.env
+.DS_Store
+.vscode
+
+# Coverage and other reports
+/reports
+coverage.json
