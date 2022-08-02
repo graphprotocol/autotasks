@@ -4,5 +4,38 @@
   "description": "A collection of Defender Autotasks to interact with The Graph protocol contracts",
   "repository": "https://github.com/graphprotocol/autotasks",
   "author": "Pablo Carranza Vélez <pablo@edgeandnode.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "yarn lint:ts",
+    "lint:fix": "yarn lint:ts:fix",
+    "lint:ts": "eslint '**/*.{js,ts}'",
+    "lint:ts:fix": "yarn prettier:ts && eslint '**/*.{js,ts}' --fix",
+    "prettier": "yarn prettier:ts",
+    "prettier:ts": "prettier --write '**/*.{js,ts,json}'"
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "yarn lint:ts:fix"
+    ],
+    "**/*.js": [
+      "yarn lint:ts:fix"
+    ],
+    "**/*.json": [
+      "yarn lint:ts:fix"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
+    "eslint": "^8.21.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-no-only-tests": "^3.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1"
+  }
 }

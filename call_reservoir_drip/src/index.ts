@@ -11,7 +11,7 @@ import GraphTokenAbi from '@graphprotocol/contracts/dist/abis/GraphToken.json'
 import { GraphToken } from '@graphprotocol/contracts/dist/types/GraphToken'
 import addressBook from '@graphprotocol/contracts/addresses.json'
 
-type EventWithParameters= {
+type EventWithParameters = {
   secrets: any
   signer?: ethers.providers.JsonRpcSigner | null
 }
@@ -23,9 +23,13 @@ async function latestBlock(signer: RelayerOrSigner, relayer: Relayer | null): Pr
   let block
   if (relayer) {
     block = await relayer.call('eth_blockNumber', [])
-  } else [
-    block = await (signer.provider as ethers.providers.JsonRpcProvider).send('eth_blockNumber', [])
-  ]
+  } else
+    [
+      (block = await (signer.provider as ethers.providers.JsonRpcProvider).send(
+        'eth_blockNumber',
+        [],
+      )),
+    ]
   console.log(block)
   return BigNumber.from(block)
 }
@@ -34,7 +38,7 @@ export async function handler(event: AutotaskEvent) {
   const minInterval = (6 * 24 * 60 * 60) / 12 // 6 days, in post-Merge blocks
   const credentials: RelayerParams = event as unknown as RelayerParams
   let signer: RelayerOrSigner
-  let params = event as EventWithParameters
+  const params = event as EventWithParameters
   let relayer: Relayer | null
   if (params.signer) {
     signer = params.signer as ethers.providers.JsonRpcSigner
@@ -43,7 +47,7 @@ export async function handler(event: AutotaskEvent) {
     relayer = new Relayer(credentials)
     signer = new DefenderRelaySigner(credentials, provider, { speed: 'fast' })
   }
-  
+
   const providerAddress = await signer.getAddress()
   const chainId = params.secrets['call_reservoir_drip_chainid']
 
@@ -55,7 +59,11 @@ export async function handler(event: AutotaskEvent) {
 
   // Address of the reservoir contract
   const l1ReservoirAddress: string = (addressBook as any)[chainId]['L1Reservoir'].address
-  const l1Reservoir = new ethers.Contract(l1ReservoirAddress, L1ReservoirAbi, signer) as unknown as L1Reservoir
+  const l1Reservoir = new ethers.Contract(
+    l1ReservoirAddress,
+    L1ReservoirAbi,
+    signer,
+  ) as unknown as L1Reservoir
   const issuanceRate = await l1Reservoir.issuanceRate()
   console.log(`L1Reservoir issuanceRate is ${issuanceRate}.`)
 
@@ -82,17 +90,23 @@ type EnvInfo = {
 
 // To run locally (this code will not be executed in Autotasks)
 if (require.main === module) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   require('dotenv').config()
-  const { API_KEY: apiKey, API_SECRET: apiSecret, CHAINID: chainId, SIGNER_NUM: signerNumStr } = process.env as EnvInfo
+  const {
+    API_KEY: apiKey,
+    API_SECRET: apiSecret,
+    CHAINID: chainId,
+    SIGNER_NUM: signerNumStr,
+  } = process.env as EnvInfo
   let signer: ethers.providers.JsonRpcSigner | null
-  if(chainId == '1337') {
-    let signerNum: number = 0
+  if (chainId == '1337') {
+    let signerNum = 0
     if (signerNumStr) {
       signerNum = Number(signerNumStr)
     }
     signer = new ethers.providers.JsonRpcProvider('http://localhost:8545').getSigner(signerNum)
   }
-  handler({ apiKey, apiSecret, secrets: { 'call_reservoir_drip_chainid': chainId }, signer })
+  handler({ apiKey, apiSecret, secrets: { call_reservoir_drip_chainid: chainId }, signer })
     .then(() => process.exit(0))
     .catch((error: Error) => {
       console.error(error)
