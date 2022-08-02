@@ -10,6 +10,11 @@ export default {
     file: 'dist/index.js',
     format: 'cjs',
   },
-  plugins: [resolve({ preferBuiltins: true }), commonjs(), json({ compact: true }), typescript()],
+  plugins: [
+    resolve({ preferBuiltins: true }),
+    commonjs(),
+    json({ compact: true }),
+    typescript({ noEmitOnError: true }),
+  ],
   external: [...builtins, 'ethers', 'web3', 'axios', /^defender-relay-client(\/.*)?$/],
 }
