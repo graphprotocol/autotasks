@@ -25,3 +25,5 @@ jobs:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
       - name: Lint
         run: yarn lint
+      - name: Build call_reservoir_drip
+        run: cd call_reservoir_drip && yarn install && yarn build
