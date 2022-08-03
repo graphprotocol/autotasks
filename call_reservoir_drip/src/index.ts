@@ -7,12 +7,9 @@ import { Relayer } from 'defender-relay-client'
 // Import an ABI which will be embedded into the generated js
 import L1ReservoirAbi from '@graphprotocol/contracts/dist/abis/L1Reservoir.json'
 import { L1Reservoir } from '@graphprotocol/contracts/dist/types/L1Reservoir'
-import GraphTokenAbi from '@graphprotocol/contracts/dist/abis/GraphToken.json'
-import { GraphToken } from '@graphprotocol/contracts/dist/types/GraphToken'
 import addressBook from '@graphprotocol/contracts/addresses.json'
 
 type EventWithParameters = {
-  secrets: any
   signer?: ethers.providers.JsonRpcSigner | null
 }
 
@@ -40,6 +37,7 @@ export async function handler(event: AutotaskEvent) {
   let signer: RelayerOrSigner
   const params = event as EventWithParameters
   let relayer: Relayer | null
+
   if (params.signer) {
     signer = params.signer as ethers.providers.JsonRpcSigner
   } else {
@@ -49,23 +47,15 @@ export async function handler(event: AutotaskEvent) {
   }
 
   const providerAddress = await signer.getAddress()
-  const chainId = params.secrets['call_reservoir_drip_chainid']
-
-  const grtAddress: string = (addressBook as any)[chainId]['GraphToken'].address
-  const grt = new ethers.Contract(grtAddress, GraphTokenAbi, signer) as unknown as GraphToken
-  const totalSupply = await grt.totalSupply()
-
-  console.log(`GRT total supply before drip is ${totalSupply}`)
+  const chainId: string = (await signer.provider.getNetwork())['chainId'].toString()
 
   // Address of the reservoir contract
-  const l1ReservoirAddress: string = (addressBook as any)[chainId]['L1Reservoir'].address
+  const l1ReservoirAddress: string = addressBook[chainId]['L1Reservoir'].address
   const l1Reservoir = new ethers.Contract(
     l1ReservoirAddress,
     L1ReservoirAbi,
     signer,
   ) as unknown as L1Reservoir
-  const issuanceRate = await l1Reservoir.issuanceRate()
-  console.log(`L1Reservoir issuanceRate is ${issuanceRate}.`)
 
   const currentBlock = await latestBlock(signer, relayer)
   const lastDripBlock = await l1Reservoir.lastRewardsUpdateBlock()
@@ -95,10 +85,11 @@ if (require.main === module) {
   const {
     API_KEY: apiKey,
     API_SECRET: apiSecret,
-    CHAINID: chainId,
+    CHAINID: envChainId,
     SIGNER_NUM: signerNumStr,
   } = process.env as EnvInfo
   let signer: ethers.providers.JsonRpcSigner | null
+  const chainId = envChainId || '1337'
   if (chainId == '1337') {
     let signerNum = 0
     if (signerNumStr) {
@@ -106,7 +97,7 @@ if (require.main === module) {
     }
     signer = new ethers.providers.JsonRpcProvider('http://localhost:8545').getSigner(signerNum)
   }
-  handler({ apiKey, apiSecret, secrets: { call_reservoir_drip_chainid: chainId }, signer })
+  handler({ apiKey, apiSecret, signer })
     .then(() => process.exit(0))
     .catch((error: Error) => {
       console.error(error)
