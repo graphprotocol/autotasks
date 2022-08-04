@@ -49,8 +49,9 @@ export async function handler(event: AutotaskEvent) {
   const providerAddress = await signer.getAddress()
   const chainId: string = (await signer.provider.getNetwork())['chainId'].toString()
 
+  const contracts = (addressBook as Record<string, Record<string, any>>)[chainId]
   // Address of the reservoir contract
-  const l1ReservoirAddress: string = addressBook[chainId]['L1Reservoir'].address
+  const l1ReservoirAddress: string = contracts['L1Reservoir'].address
   const l1Reservoir = new ethers.Contract(
     l1ReservoirAddress,
     L1ReservoirAbi,
