@@ -7,7 +7,7 @@ import { Relayer } from 'defender-relay-client'
 // Import an ABI which will be embedded into the generated js
 import L1ReservoirAbi from '@graphprotocol/contracts/dist/abis/L1Reservoir.json'
 import { L1Reservoir } from '@graphprotocol/contracts/dist/types/L1Reservoir'
-import addressBook from '@graphprotocol/contracts/addresses.json'
+import addressBook from '@graphprotocol/contracts/addresses-scratch-1.json'
 
 type EventWithParameters = {
   signer?: ethers.providers.JsonRpcSigner | null
