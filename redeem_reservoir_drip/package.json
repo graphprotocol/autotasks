@@ -1,5 +1,5 @@
 {
-  "name": "defender-rollup-demo",
+  "name": "call-reservoir-drip-autotask",
   "version": "1.0.0",
   "main": "dist/index.js",
   "license": "MIT",
@@ -19,11 +19,11 @@
     "typescript": "^4.1.2"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.3.0",
+    "@arbitrum/sdk": "3.0.0-beta.6",
+    "aws-sdk": "^2.733.0",
     "defender-relay-client": "^1.1.0",
     "dotenv": "^8.2.0",
     "ethers": "5.0.3",
-    "is-odd": "^3.0.1",
     "web3": "1.2.9"
   }
 }

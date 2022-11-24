@@ -1,6 +1,4 @@
-# Defender Autotask example using Rollup
-
-This folder shows how to code an Autotask with package dependencies not available in the Autotasks runtime, by generating a bundle using [Rollup](https://rollupjs.org/) that includes all dependencies, along with imported ABIs so they don't have to be copied into the script. This example uses typescript, but is also applicable to javascript.
+# Defender Autotask to redeem the L1Reservoir drip on L2
 
 ## Setup
 
